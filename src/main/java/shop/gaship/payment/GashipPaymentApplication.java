@@ -1,8 +1,11 @@
-package com.example.gashippayment;
+package shop.gaship.payment;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * Gaship payment application.
+ */
 @SpringBootApplication
 public class GashipPaymentApplication {
 
