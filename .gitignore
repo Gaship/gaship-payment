@@ -194,5 +194,8 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/maven,macos,windows,intellij+iml,java
 
+#.idea
+*.idea
+
 # application properties ignore
 src/main/resources/application.properties
