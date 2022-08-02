@@ -21,7 +21,7 @@ import java.util.Base64;
 @Component
 @RequiredArgsConstructor
 public class TossAdapterImpl implements TossAdapter {
-    private static final String TOSS_URL = "/v1/payments";
+    public static final String TOSS_URL = "/v1/payments";
     private final String secretKey;
 
     @Override

@@ -9,5 +9,7 @@ import shop.gaship.payment.dto.request.PaymentRequestDto;
  * @since 1.0
  */
 public interface PaymentService {
-    void addPayment(PaymentRequestDto requestDto);
+    void successPayment(PaymentRequestDto requestDto);
+
+    void failPayment(String code, String message, String orderId);
 }
