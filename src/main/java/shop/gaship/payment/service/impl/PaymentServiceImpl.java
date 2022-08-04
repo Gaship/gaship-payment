@@ -10,10 +10,9 @@ import shop.gaship.payment.dto.request.FailedPaymentHistoryAddRequestDto;
 import shop.gaship.payment.dto.request.PaymentRequestDto;
 import shop.gaship.payment.dto.request.SuccessfulPaymentHistoryAddRequestDto;
 import shop.gaship.payment.exception.FileUploadFailureException;
+import shop.gaship.payment.exception.SavePaymentFileException;
 import shop.gaship.payment.service.PaymentService;
 import shop.gaship.payment.util.FileUploadUtil;
-
-import java.io.IOException;
 
 /**
  * 결제관련 요청 처리로직을 위한 payment service interface 구현체.
@@ -43,8 +42,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         try {
             fileUploadUtil.writePaymentFile("/payment-result", paymentResult);
-        } catch (IOException e) {
-            throw new FileUploadFailureException();
+        } catch (FileUploadFailureException e) {
+            throw new SavePaymentFileException();
         } finally {
             paymentHistoryAdapter.addSuccessfulPaymentHistory(
                     SuccessfulPaymentHistoryAddRequestDto.builder()

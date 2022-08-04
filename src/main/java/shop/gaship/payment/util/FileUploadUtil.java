@@ -31,10 +31,9 @@ public class FileUploadUtil {
      * @param paymentInfo 파일로 업로드 할 데이터.
      * @throws FileUploadFailureException 파일 업로드에 실패하였을때 발생하는 exception 입니다.
      */
-    public void writePaymentFile(String uploadDir, Payment paymentInfo) throws IOException {
+    public void writePaymentFile(String uploadDir, Payment paymentInfo){
         String date = File.separator + LocalDate.now();
         Path uploadPath = Paths.get(uploadBaseUrl + uploadDir + date);
-        ObjectMapper objectMapper = new ObjectMapper();
 
         if (!Files.exists(uploadPath)) {
             createUploadPath(uploadPath);
@@ -42,7 +41,7 @@ public class FileUploadUtil {
 
         String fileLink = uploadPath + File.separator + paymentInfo.getOrderId();
 
-        objectMapper.writeValue(new File(fileLink), paymentInfo);
+        transferFile(fileLink, paymentInfo);
     }
 
     /**
@@ -53,6 +52,21 @@ public class FileUploadUtil {
     private void createUploadPath(Path uploadPath) {
         try {
             Files.createDirectories(uploadPath);
+        } catch (IOException e) {
+            throw new FileUploadFailureException();
+        }
+    }
+
+    /**
+     * payment 를 업로드하는 메서드입니다.
+     *
+     * @param fileLink      업로드할 파일의 링크입니다.
+     * @param paymentInfo   업로드할 결제 정보입니다.
+     */
+    private void transferFile(String fileLink, Payment paymentInfo) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            objectMapper.writeValue(new File(fileLink), paymentInfo);
         } catch (IOException e) {
             throw new FileUploadFailureException();
         }

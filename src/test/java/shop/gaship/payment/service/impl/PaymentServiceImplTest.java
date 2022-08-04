@@ -12,6 +12,7 @@ import shop.gaship.payment.adapter.PaymentHistoryAdapter;
 import shop.gaship.payment.adapter.TossAdapter;
 import shop.gaship.payment.dummy.PaymentDummy;
 import shop.gaship.payment.exception.FileUploadFailureException;
+import shop.gaship.payment.exception.SavePaymentFileException;
 import shop.gaship.payment.service.PaymentService;
 import shop.gaship.payment.util.FileUploadUtil;
 
@@ -57,7 +58,7 @@ class PaymentServiceImplTest {
 
     @Test
     @DisplayName("결제 승인 처리 메서드 테스트")
-    void successPaymentTest() throws IOException {
+    void successPaymentTest(){
         when(tossAdapter.requestSuccessPayment(any()))
                 .thenReturn(PaymentDummy.cardPaymentDummy());
         doNothing().when(fileUploadUtil).writePaymentFile(any(), any());
@@ -75,15 +76,15 @@ class PaymentServiceImplTest {
 
     @Test
     @DisplayName("결제 승인시 파일 업로드 실패하는 경우 테스트")
-    void successPaymentTest_whenFileUploadFail() throws IOException {
+    void successPaymentTest_whenFileUploadFail(){
         when(tossAdapter.requestSuccessPayment(any()))
                 .thenReturn(PaymentDummy.cardPaymentDummy());
-        doThrow(IOException.class).when(fileUploadUtil).writePaymentFile(any(), any());
+        doThrow(FileUploadFailureException.class).when(fileUploadUtil).writePaymentFile(any(), any());
         doNothing().when(paymentHistoryAdapter).addSuccessfulPaymentHistory(any());
 
         assertThatThrownBy(() -> paymentService.successPayment(
                 dummyPaymentKey, dummyOrderId, dummyAmount
-        )).isInstanceOf(FileUploadFailureException.class);
+        )).isInstanceOf(SavePaymentFileException.class);
 
         verify(tossAdapter).requestSuccessPayment(any());
         verify(fileUploadUtil).writePaymentFile(any(), any());
