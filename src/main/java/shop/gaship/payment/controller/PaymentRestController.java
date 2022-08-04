@@ -2,7 +2,6 @@ package shop.gaship.payment.controller;
 
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.gaship.payment.advice.response.ErrorResponse;
-import shop.gaship.payment.dto.request.PaymentRequestDto;
 import shop.gaship.payment.service.PaymentService;
 
 /**
@@ -22,7 +20,6 @@ import shop.gaship.payment.service.PaymentService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/payment")
-@Slf4j
 public class PaymentRestController {
     private final PaymentService paymentService;
 
@@ -40,12 +37,7 @@ public class PaymentRestController {
             @ApiParam(required = true) @RequestParam String orderId,
             @ApiParam(required = true) @RequestParam Long amount
     ){
-        PaymentRequestDto requestDto = new PaymentRequestDto();
-        requestDto.setPaymentKey(paymentKey);
-        requestDto.setOrderId(orderId);
-        requestDto.setAmount(amount);
-
-        paymentService.successPayment(requestDto);
+        paymentService.successPayment(paymentKey, orderId, amount);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .build();

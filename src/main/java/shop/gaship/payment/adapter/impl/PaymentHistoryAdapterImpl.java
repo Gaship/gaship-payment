@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import shop.gaship.payment.adapter.PaymentHistoryAdapter;
 import shop.gaship.payment.config.ServerConfig;
-import shop.gaship.payment.dto.request.FailedPaymentHistoryRequestDto;
+import shop.gaship.payment.dto.request.FailedPaymentHistoryAddRequestDto;
+import shop.gaship.payment.dto.request.SuccessfulPaymentHistoryAddRequestDto;
 import shop.gaship.payment.util.ExceptionUtil;
 
 /**
@@ -26,7 +27,19 @@ public class PaymentHistoryAdapterImpl implements PaymentHistoryAdapter {
     private final ServerConfig serverConfig;
 
     @Override
-    public void addFailedPaymentHistory(FailedPaymentHistoryRequestDto requestDto) {
+    public void addSuccessfulPaymentHistory(SuccessfulPaymentHistoryAddRequestDto requestDto) {
+        WebClient.create(serverConfig.getShoppingMallUrl())
+                .post()
+                .uri(PAYMENT_HISTORY_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestDto)
+                .retrieve()
+                .onStatus(HttpStatus::isError, ExceptionUtil::createErrorMono)
+                .bodyToMono(ResponseEntity.class).block();
+    }
+
+    @Override
+    public void addFailedPaymentHistory(FailedPaymentHistoryAddRequestDto requestDto) {
         WebClient.create(serverConfig.getShoppingMallUrl())
                 .post()
                 .uri(PAYMENT_HISTORY_URL)

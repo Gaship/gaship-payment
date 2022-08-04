@@ -1,7 +1,6 @@
 package shop.gaship.payment.domain;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -12,9 +11,8 @@ import lombok.ToString;
  * @since 1.0
  */
 @Getter
-@NoArgsConstructor
-@ToString
 @Setter
+@ToString
 public class Payment {
     private String mId;
     private String version;
@@ -26,49 +24,58 @@ public class Payment {
     private String orderName;
     private String requestedAt;
     private String approvedAt;
-    private Boolean useEscrow;
-    private Boolean cultureExpense;
     private Card card;
-    private String virtualAccount;
-    private String transfer;
-    private String mobilePhone;
-    private String giftCertificate;
-    private String cashReceipt;
-    private String discount;
-    private String cancels;
-    private String secret;
+    private Cancel[] cancels;
     private String type;
-    private String easyPay;
+    private EasyPay easyPay;
     private String country;
-    private String failure;
+    private Failure failure;
     private Boolean isPartialCancelable;
     private Receipt receipt;
     private String currency;
-    private Long totalAmount;
-    private Long balanceAmount;
-    private Long suppliedAmount;
-    private Long vat;
-    private Long taxFreeAmount;
-    private String method;
+    private Long totalAmount; // 총 결제 금액
+    private Long balanceAmount; // 취소 가능한 금액
+    private String method; // 결제할 때 사용한 결제 수단 (카드)
     @Getter
-    @NoArgsConstructor
+    @Setter
     public static class Receipt {
         private String url;
     }
     @Getter
-    @NoArgsConstructor
+    @Setter
     public static class Card {
         private String company;
         private String number;
-        private Integer installmentPlanMonths;
-        private Boolean isInterestFree;
-        private String interestPayer;
         private String approveNo;
-        private Boolean useCardPoint;
-        private String cardType;
-        private String ownerType;
-        private String acquireStatus;
-        private String receiptUrl;
+        private String cardType; // 신용, 체크, 기프트
+        private String ownerType; // 개인, 법인
+        private String acquireStatus; // 카드 결제의 매입 상태
+        private String receiptUrl; // 카드 매출 전표
         private Long amount;
+    }
+
+    @Getter
+    @Setter
+    public static class EasyPay{
+        private Integer amount;
+        private String provider;
+        private Number discountAmount;
+    }
+
+    @Getter
+    @Setter
+    public static class Failure{
+        private String code;
+        private String message;
+    }
+
+    @Getter
+    @Setter
+    public static class Cancel{
+        private Number cancelAmount;
+        private String cancelReason;
+        private Number refundableAmount;
+        private String canceledAt;
+        private String transactionKey;
     }
 }
