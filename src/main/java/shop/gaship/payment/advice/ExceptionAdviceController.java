@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import shop.gaship.payment.advice.response.ErrorResponse;
 
+import java.net.ConnectException;
+
 /**
  * exception 처리 advice controller.
  *
@@ -27,5 +29,15 @@ public class ExceptionAdviceController {
 
         log.error("error : {}, message : {}", ex.getAllErrors(), ex.getMessage());
         return ResponseEntity.badRequest().body(new ErrorResponse(message));
+    }
+
+    @ExceptionHandler({ConnectException.class})
+    public ResponseEntity<ErrorResponse> connectionExceptionHandler(Exception e){
+        String message = e.getMessage();
+
+        log.error("error : {}, message : {}", e.getCause(), e.getMessage());
+        return ResponseEntity
+                .internalServerError()
+                .body(new ErrorResponse(message));
     }
 }
