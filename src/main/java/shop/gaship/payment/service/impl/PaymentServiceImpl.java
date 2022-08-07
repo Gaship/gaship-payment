@@ -3,12 +3,9 @@ package shop.gaship.payment.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import shop.gaship.payment.adapter.PaymentHistoryAdapter;
 import shop.gaship.payment.adapter.TossAdapter;
 import shop.gaship.payment.domain.Payment;
-import shop.gaship.payment.dto.request.FailedPaymentHistoryAddRequestDto;
 import shop.gaship.payment.dto.request.PaymentRequestDto;
-import shop.gaship.payment.dto.request.SuccessfulPaymentHistoryAddRequestDto;
 import shop.gaship.payment.exception.FileUploadFailureException;
 import shop.gaship.payment.exception.SavePaymentFileException;
 import shop.gaship.payment.service.PaymentService;
@@ -26,11 +23,10 @@ import shop.gaship.payment.util.FileUploadUtil;
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
     private final TossAdapter tossAdapter;
-    private final PaymentHistoryAdapter paymentHistoryAdapter;
     private final FileUploadUtil fileUploadUtil;
 
     @Override
-    public void successPayment(String paymentKey, String orderId, Long amount){
+    public void successPayment(String paymentKey, String orderId, Long amount) {
         Payment paymentResult = tossAdapter.requestSuccessPayment(
                 PaymentRequestDto
                         .builder()
@@ -44,23 +40,11 @@ public class PaymentServiceImpl implements PaymentService {
             fileUploadUtil.writePaymentFile("/payment-result", paymentResult);
         } catch (FileUploadFailureException e) {
             throw new SavePaymentFileException();
-        } finally {
-            paymentHistoryAdapter.addSuccessfulPaymentHistory(
-                    SuccessfulPaymentHistoryAddRequestDto.builder()
-                            .payment(paymentResult)
-                            .build()
-            );
         }
     }
 
     @Override
     public void failPayment(String code, String message, String orderId) {
-        paymentHistoryAdapter.addFailedPaymentHistory(
-                FailedPaymentHistoryAddRequestDto
-                .builder()
-                .orderId(orderId)
-                .errorCode(code)
-                .errorMessage(message)
-                .build());
+
     }
 }

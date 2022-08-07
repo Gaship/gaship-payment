@@ -8,15 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import shop.gaship.payment.adapter.PaymentHistoryAdapter;
 import shop.gaship.payment.adapter.TossAdapter;
 import shop.gaship.payment.dummy.PaymentDummy;
 import shop.gaship.payment.exception.FileUploadFailureException;
 import shop.gaship.payment.exception.SavePaymentFileException;
 import shop.gaship.payment.service.PaymentService;
 import shop.gaship.payment.util.FileUploadUtil;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -40,9 +37,6 @@ class PaymentServiceImplTest {
     private TossAdapter tossAdapter;
 
     @MockBean
-    private PaymentHistoryAdapter paymentHistoryAdapter;
-
-    @MockBean
     private FileUploadUtil fileUploadUtil;
 
     private String dummyPaymentKey;
@@ -62,7 +56,6 @@ class PaymentServiceImplTest {
         when(tossAdapter.requestSuccessPayment(any()))
                 .thenReturn(PaymentDummy.cardPaymentDummy());
         doNothing().when(fileUploadUtil).writePaymentFile(any(), any());
-        doNothing().when(paymentHistoryAdapter).addSuccessfulPaymentHistory(any());
 
         assertThatNoException().isThrownBy(() -> paymentService
                 .successPayment(
@@ -71,7 +64,6 @@ class PaymentServiceImplTest {
 
         verify(tossAdapter).requestSuccessPayment(any());
         verify(fileUploadUtil).writePaymentFile(any(), any());
-        verify(paymentHistoryAdapter).addSuccessfulPaymentHistory(any());
     }
 
     @Test
@@ -80,7 +72,6 @@ class PaymentServiceImplTest {
         when(tossAdapter.requestSuccessPayment(any()))
                 .thenReturn(PaymentDummy.cardPaymentDummy());
         doThrow(FileUploadFailureException.class).when(fileUploadUtil).writePaymentFile(any(), any());
-        doNothing().when(paymentHistoryAdapter).addSuccessfulPaymentHistory(any());
 
         assertThatThrownBy(() -> paymentService.successPayment(
                 dummyPaymentKey, dummyOrderId, dummyAmount
@@ -88,6 +79,5 @@ class PaymentServiceImplTest {
 
         verify(tossAdapter).requestSuccessPayment(any());
         verify(fileUploadUtil).writePaymentFile(any(), any());
-        verify(paymentHistoryAdapter).addSuccessfulPaymentHistory(any());
     }
 }
