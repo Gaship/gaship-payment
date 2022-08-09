@@ -1,15 +1,15 @@
-package shop.gaship.payment.controller;
+package shop.gaship.payment.process.controller;
 
+import javax.validation.Valid;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import shop.gaship.payment.advice.response.ErrorResponse;
-import shop.gaship.payment.service.PaymentService;
+import shop.gaship.payment.process.dto.request.PaymentSuccessRequestDto;
+import shop.gaship.payment.process.service.PaymentService;
+
 
 /**
  * 결제 요청 처리를 위한 rest controller.
@@ -26,18 +26,11 @@ public class PaymentRestController {
     /**
      * 결제가 성공한 경우 결제 승인 처리 Get Mapping 메서드입니다.
      *
-     * @param paymentKey 결제 요청을 식별하기 위한 결제 식별키입니다. (String)
-     * @param orderId    결제 요청에 해당하는 주문을 식별하기 위한 주문 식별 id 입니다. (String)
-     * @param amount     결제하려는 총 금액입니다. (Long)
      * @return 요청 처리에 대한 상태(HttpStatus.OK)를 담은 ResponseEntity 를 반환합니다.
      */
-    @GetMapping("/success")
-    public ResponseEntity<Void> paymentSuccess(
-            @ApiParam(required = true) @RequestParam String paymentKey,
-            @ApiParam(required = true) @RequestParam String orderId,
-            @ApiParam(required = true) @RequestParam Long amount
-    ){
-        paymentService.successPayment(paymentKey, orderId, amount);
+    @PostMapping("/success")
+    public ResponseEntity<Void> paymentSuccess(@Valid @RequestBody PaymentSuccessRequestDto requestDto) {
+        paymentService.successPayment(requestDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
@@ -56,7 +49,7 @@ public class PaymentRestController {
             @ApiParam(required = true) @RequestParam String code,
             @ApiParam(required = true) @RequestParam String message,
             @ApiParam(required = true) @RequestParam String orderId
-    ){
+    ) {
         paymentService.failPayment(code, message, orderId);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

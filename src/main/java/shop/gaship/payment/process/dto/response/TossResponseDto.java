@@ -1,4 +1,4 @@
-package shop.gaship.payment.domain;
+package shop.gaship.payment.process.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +13,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Payment {
-    private String mId;
+public class TossResponseDto implements PaymentResponse {
     private String version;
     private String paymentKey;
     private String status;
@@ -36,6 +35,7 @@ public class Payment {
     private Long totalAmount; // 총 결제 금액
     private Long balanceAmount; // 취소 가능한 금액
     private String method; // 결제할 때 사용한 결제 수단 (카드)
+
     @Getter
     @Setter
     public static class Receipt {
@@ -56,22 +56,22 @@ public class Payment {
 
     @Getter
     @Setter
-    public static class EasyPay{
-        private Integer amount;
+    public static class EasyPay {
+        private Long amount;
         private String provider;
         private Number discountAmount;
     }
 
     @Getter
     @Setter
-    public static class Failure{
+    public static class Failure {
         private String code;
         private String message;
     }
 
     @Getter
     @Setter
-    public static class Cancel{
+    public static class Cancel {
         private Number cancelAmount;
         private String cancelReason;
         private Number refundableAmount;
