@@ -1,20 +1,21 @@
 package shop.gaship.payment.history.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.gaship.payment.history.dto.request.PaymentHistoryRequestDto;
-import shop.gaship.payment.status.entity.PaymentStatusCode;
+import shop.gaship.payment.history.enumm.PaymentProvider;
+import shop.gaship.payment.status.enumm.PaymentStatus;
 
 
 /**
@@ -32,39 +33,46 @@ public class PaymentHistory {
     @Id
     private String paymentKey;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_status_no")
-    private PaymentStatusCode paymentStatusCode;
     @NotNull
-    private String orderId;
+    @Enumerated(value = EnumType.STRING)
+    private PaymentProvider provider;
+
+    @NotNull
+    @Enumerated(value = EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
+    @NotNull
+    @Column(unique = true)
+    private Integer orderNo;
+
     @NotNull
     private String orderName;
+
     @NotNull
     private String paymentMethod;
     @NotNull
     private Long totalAmount;
     @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime requestedAt;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime approvedAt;
     private Long balanceAmount;
     private String currency;
     private String country;
     private String receiptUrl;
 
-    @Column(name = "payment_failure_message")
-    private String failureMessage;
-
     /**
-     * Instantiates a new Payment history.
+     * 결제 요청이 성공한 경우의 결제 이력을 생성합니다.
      *
-     * @param requestDto    결제이력에 대한 데이터입니다. (PaymentHistoryRequestDto)
-     * @param paymentStatus 결제 결과에 대한 상태입니다. (PaymentStatusCode)
+     * @param requestDto 결제 이력 생성 요청 dto 입니다.
      */
-    public PaymentHistory(PaymentHistoryRequestDto requestDto, PaymentStatusCode paymentStatus) {
+    public PaymentHistory(PaymentHistoryRequestDto requestDto) {
         this.paymentKey = requestDto.getPaymentKey();
-        this.paymentStatusCode = paymentStatus;
-        this.orderId = requestDto.getOrderId();
+        this.provider = requestDto.getProvider();
+        this.paymentStatus = PaymentStatus.SUCCESS;
+        this.orderNo = requestDto.getOrderNo();
         this.orderName = requestDto.getOrderName();
         this.paymentMethod = requestDto.getPaymentMethod();
         this.totalAmount = requestDto.getTotalAmount();
@@ -74,5 +82,47 @@ public class PaymentHistory {
         this.currency = requestDto.getCurrency();
         this.country = requestDto.getCountry();
         this.receiptUrl = requestDto.getReceiptUrl();
+    }
+
+    /**
+     * 결제 요청이 실패한 경우의 결제 이력을 생성합니다.
+     *
+     * @param requestDto 결제 이력 생성 요청 dto 입니다.
+     * @return 결제 실패 이력을 반환합니다. (PaymentHistory)
+     */
+    public static PaymentHistory createFailedHistory(
+            PaymentHistoryRequestDto requestDto) {
+        PaymentHistory failedPaymentHistory = new PaymentHistory();
+
+        failedPaymentHistory.paymentKey = requestDto.getPaymentKey();
+        failedPaymentHistory.provider = requestDto.getProvider();
+        failedPaymentHistory.paymentStatus = PaymentStatus.FAIL;
+        failedPaymentHistory.orderNo = requestDto.getOrderNo();
+        failedPaymentHistory.orderName = requestDto.getOrderName();
+        failedPaymentHistory.paymentMethod = requestDto.getPaymentMethod();
+        failedPaymentHistory.totalAmount = requestDto.getTotalAmount();
+        failedPaymentHistory.requestedAt = requestDto.getRequestedAt();
+
+        return failedPaymentHistory;
+    }
+
+    /**
+     * 결제 전체 취소하는 경우 해당 결제 이력의 결제 상태를 CANCELED 로 수정하고
+     * 취소 가능 잔여 금액을 0원으로 수정합니다.
+     */
+    public void cancel() {
+        this.paymentStatus = PaymentStatus.CANCELED;
+        this.balanceAmount = 0L;
+    }
+
+    /**
+     * 결제 부분 취소를 하는 경우 해당 결제 이력의 결제 상태를 PARTIAL_CANCELED 로 수정하고
+     * 취소 가능 잔여 금액을 수정합니다.
+     *
+     * @param balanceAmount 결제 부분 취소 완료 후 남은 취소 가능 금액입니다. (Long)
+     */
+    public void cancelPartial(Long balanceAmount) {
+        this.paymentStatus = PaymentStatus.PARTIAL_CANCELED;
+        this.balanceAmount = balanceAmount;
     }
 }

@@ -3,6 +3,7 @@ package shop.gaship.payment.history.dto.request;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
+import shop.gaship.payment.history.enumm.PaymentProvider;
 
 
 /**
@@ -15,7 +16,8 @@ import lombok.Getter;
 @Builder
 public class PaymentHistoryRequestDto {
     private String paymentKey;
-    private String orderId;
+    private PaymentProvider provider;
+    private Integer orderNo;
     private String orderName;
     private String paymentMethod;
     private Long totalAmount;

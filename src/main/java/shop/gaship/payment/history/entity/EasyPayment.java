@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.gaship.payment.history.dto.request.impl.EasyPaymentHistoryRequest;
-import shop.gaship.payment.status.entity.PaymentStatusCode;
-
 
 
 /**
@@ -18,7 +16,7 @@ import shop.gaship.payment.status.entity.PaymentStatusCode;
  */
 @Getter
 @NoArgsConstructor
-@Entity
+@Entity(name = "easy_payments")
 public class EasyPayment extends PaymentHistory {
     @NotNull
     private String easyPayProvider;
@@ -26,14 +24,13 @@ public class EasyPayment extends PaymentHistory {
     private Long easyPayAmount;
 
     /**
-     * Instantiates a new Easy payment.
+     * 간편 결제를 통해 결제에 성공한 경우 간편 결제 이력을 생성하는 생성자입니다.
      *
      * @param requestDto    간편결제에 대한 데이터입니다. (EasyPaymentHistoryRequest)
-     * @param paymentStatus 결제 결과에 대한 상태입니다. (PaymentStatusCode)
      */
     @Builder
-    public EasyPayment(EasyPaymentHistoryRequest requestDto, PaymentStatusCode paymentStatus) {
-        super(requestDto.getPaymentHistory(), paymentStatus);
+    public EasyPayment(EasyPaymentHistoryRequest requestDto) {
+        super(requestDto.getPaymentHistory());
         this.easyPayProvider = requestDto.getEasyPayProvider();
         this.easyPayAmount = requestDto.getEasyPayAmount();
     }

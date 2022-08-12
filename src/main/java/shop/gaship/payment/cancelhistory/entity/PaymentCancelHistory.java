@@ -11,9 +11,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.gaship.payment.history.entity.PaymentHistory;
+
+
 
 /**
  * 결제취소이력 entity class 입니다.
@@ -35,11 +38,11 @@ public class PaymentCancelHistory {
     @JoinColumn(name = "payment_key", nullable = false)
     private PaymentHistory paymentHistory;
 
-    @NotNull
-    private Integer canceledOrderProductNo;
+    @Column(name = "is_complete", columnDefinition = "tinyint(1) default 0")
+    private boolean complete;
 
     @NotNull
-    private Integer cancelAmount;
+    private Long cancelAmount;
 
     @NotNull
     private String cancelReason;
@@ -49,4 +52,39 @@ public class PaymentCancelHistory {
 
     @Column(name = "canceled_failure_message")
     private String failureMessage;
+
+    /**
+     * 결제 취소 이력을 생성하는 생성자입니다.
+     *
+     * @param paymentHistory the payment history
+     * @param cancelAmount   the cancel amount
+     * @param cancelReason   the cancel reason
+     * @param canceledAt     the canceled at
+     */
+    @Builder
+    public PaymentCancelHistory(PaymentHistory paymentHistory,
+                                Long cancelAmount,
+                                String cancelReason,
+                                LocalDateTime canceledAt) {
+        this.paymentHistory = paymentHistory;
+        this.cancelAmount = cancelAmount;
+        this.cancelReason = cancelReason;
+        this.canceledAt = canceledAt;
+    }
+
+    /**
+     * 결제 취소 처리가 완료되었을때 해당 결제 취소 이력의 완료값을 true 로 변경합니다.
+     */
+    public void cancelComplete() {
+        this.complete = true;
+    }
+
+    /**
+     * 결제 취소 요청이 실패했을때 해당 결제 취소 이력에 실패 내용을 추가합니다.
+     *
+     * @param failureMessage 결제 취소 요청의 실패 내용입니다. (String)
+     */
+    public void modifyFailureMessage(String failureMessage) {
+        this.failureMessage = failureMessage;
+    }
 }
