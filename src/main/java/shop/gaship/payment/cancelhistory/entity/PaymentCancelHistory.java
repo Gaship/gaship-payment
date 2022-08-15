@@ -1,5 +1,6 @@
 package shop.gaship.payment.cancelhistory.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,7 +49,11 @@ public class PaymentCancelHistory {
     private String cancelReason;
 
     @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime canceledAt;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime cancelApprovedAt;
 
     @Column(name = "canceled_failure_message")
     private String failureMessage;
@@ -75,8 +80,9 @@ public class PaymentCancelHistory {
     /**
      * 결제 취소 처리가 완료되었을때 해당 결제 취소 이력의 완료값을 true 로 변경합니다.
      */
-    public void cancelComplete() {
+    public void cancelComplete(LocalDateTime cancelApprovedAt) {
         this.complete = true;
+        this.cancelApprovedAt = cancelApprovedAt;
     }
 
     /**

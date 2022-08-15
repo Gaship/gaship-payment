@@ -1,6 +1,7 @@
 package shop.gaship.payment.process.adapter;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import shop.gaship.payment.process.dto.request.CancelPaymentRequestDto;
 import shop.gaship.payment.process.dto.request.PaymentSuccessRequestDto;
 
 /**
@@ -11,4 +12,6 @@ import shop.gaship.payment.process.dto.request.PaymentSuccessRequestDto;
  */
 public interface PaymentAdapter {
     JsonNode requestSuccessPayment(PaymentSuccessRequestDto requestDto);
+
+    JsonNode requestCancelPayment(String paymentKey, CancelPaymentRequestDto build);
 }
