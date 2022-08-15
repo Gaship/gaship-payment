@@ -1,5 +1,6 @@
 package shop.gaship.payment.process.dto.response;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,6 +13,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class OrderResponseDto {
-    private String no;
+    private Integer no;
     private Long totalOrderAmount;
+    private List<Integer> orderProductNos;
 }

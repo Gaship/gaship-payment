@@ -72,9 +72,9 @@ public class TossResponseDto implements PaymentResponse {
     @Getter
     @Setter
     public static class Cancel {
-        private Number cancelAmount;
+        private Long cancelAmount;
         private String cancelReason;
-        private Number refundableAmount;
+        private Long refundableAmount;
         private String canceledAt;
         private String transactionKey;
     }

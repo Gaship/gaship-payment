@@ -10,9 +10,10 @@ import lombok.Getter;
  */
 @Getter
 public enum PaymentStatus {
-    FAIL("실패"), SUCCESS("성공");
-
-    public static final String GROUP = "결제상태";
+    FAIL("결제실패"),
+    SUCCESS("결제성공"),
+    CANCELED("전체취소"),
+    PARTIAL_CANCELED("부분취소");
 
     private final String value;
 

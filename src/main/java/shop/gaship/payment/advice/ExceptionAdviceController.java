@@ -32,7 +32,7 @@ public class ExceptionAdviceController {
     }
 
     @ExceptionHandler({ConnectException.class})
-    public ResponseEntity<ErrorResponse> connectionExceptionHandler(Exception e){
+    public ResponseEntity<ErrorResponse> connectionExceptionHandler(Exception e) {
         String message = e.getMessage();
 
         log.error("error : {}, message : {}", e.getCause(), e.getMessage());

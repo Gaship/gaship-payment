@@ -35,7 +35,7 @@ public class PaymentHistory {
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
-    private PaymentProvider provider;
+    private PaymentProvider paymentProvider;
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
@@ -46,18 +46,16 @@ public class PaymentHistory {
     private Integer orderNo;
 
     @NotNull
-    private String orderName;
-
-    @NotNull
-    private String paymentMethod;
-    @NotNull
     private Long totalAmount;
+
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime requestedAt;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime approvedAt;
+    private String orderName;
+    private String paymentMethod;
     private Long balanceAmount;
     private String currency;
     private String country;
@@ -70,7 +68,7 @@ public class PaymentHistory {
      */
     public PaymentHistory(PaymentHistoryRequestDto requestDto) {
         this.paymentKey = requestDto.getPaymentKey();
-        this.provider = requestDto.getProvider();
+        this.paymentProvider = requestDto.getProvider();
         this.paymentStatus = PaymentStatus.SUCCESS;
         this.orderNo = requestDto.getOrderNo();
         this.orderName = requestDto.getOrderName();
@@ -95,7 +93,7 @@ public class PaymentHistory {
         PaymentHistory failedPaymentHistory = new PaymentHistory();
 
         failedPaymentHistory.paymentKey = requestDto.getPaymentKey();
-        failedPaymentHistory.provider = requestDto.getProvider();
+        failedPaymentHistory.paymentProvider = requestDto.getProvider();
         failedPaymentHistory.paymentStatus = PaymentStatus.FAIL;
         failedPaymentHistory.orderNo = requestDto.getOrderNo();
         failedPaymentHistory.orderName = requestDto.getOrderName();

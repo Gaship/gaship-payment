@@ -4,7 +4,7 @@ import shop.gaship.payment.history.dto.request.impl.CardPaymentHistoryRequest;
 import shop.gaship.payment.history.dto.request.impl.EasyPaymentHistoryRequest;
 import shop.gaship.payment.history.entity.CardPayment;
 import shop.gaship.payment.history.entity.EasyPayment;
-import shop.gaship.payment.status.entity.PaymentStatusCode;
+import shop.gaship.payment.history.entity.PaymentHistory;
 
 /**
  * 결제이력 관련 service interface 입니다.
@@ -29,19 +29,18 @@ public interface PaymentHistoryService {
      */
     void addPaymentHistory(EasyPaymentHistoryRequest easyPaymentHistoryRequest);
 
+    PaymentHistory findPaymentHistory(String paymentKey);
+
     /**
      * 데이터를 EasyPayment entity 로 변환하여 반환하는 메서드입니다.
      *
      * @param requestDto 간편결제이력 등록 요청 데이터입니다. (EasyPaymentHistoryRequest)
-     * @param paymentStatus 결제 성공에 대한 상태입니다. (PaymentStatusCode)
      * @return EasyPayment entity 객체를 반환합니다.
      * @author 김세미
      */
-    default EasyPayment dtoToEntity(EasyPaymentHistoryRequest requestDto,
-                                    PaymentStatusCode paymentStatus) {
+    default EasyPayment dtoToEntity(EasyPaymentHistoryRequest requestDto) {
         return EasyPayment.builder()
                 .requestDto(requestDto)
-                .paymentStatus(paymentStatus)
                 .build();
     }
 
@@ -49,15 +48,12 @@ public interface PaymentHistoryService {
      * 데이터를 CardPayment entity 로 변환하여 반환하는 메서드입니다.
      *
      * @param requestDto 카드걸제이력 등록 요청 데이터입니다. (CardPaymentHistoryRequest)
-     * @param paymentStatus 결제 성공에 대한 상태입니다. (PaymentStatusCode)
      * @return CardPayment entity 객체를 반환합니다.
      * @author 김세미
      */
-    default CardPayment dtoToEntity(CardPaymentHistoryRequest requestDto,
-                                    PaymentStatusCode paymentStatus) {
+    default CardPayment dtoToEntity(CardPaymentHistoryRequest requestDto) {
         return CardPayment.builder()
                 .requestDto(requestDto)
-                .paymentStatus(paymentStatus)
                 .build();
     }
 }
