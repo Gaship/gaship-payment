@@ -66,10 +66,10 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public void successPayment(PaymentSuccessRequestDto requestDto) {
-        OrderResponseDto orderResponseDto = orderAdapter
-                .getOrderByNo(requestDto.getOrderId());
-
-        checkValidAmount(orderResponseDto, requestDto.getAmount());
+//        OrderResponseDto orderResponseDto = orderAdapter
+//                .getOrderByNo(requestDto.getOrderId());
+//
+//        checkValidAmount(orderResponseDto, requestDto.getAmount());
 
         Payment payment = paymentBuilderFactory
                 .build(PaymentProvider
@@ -79,19 +79,19 @@ public class PaymentServiceImpl implements PaymentService {
             JsonNode paymentResponseData = payment.getAdapter()
                     .requestSuccessPayment(requestDto);
 
-            orderAdapter.successOrder(SuccessOrderRequestDto.builder()
-                        .paymentKey(requestDto.getPaymentKey())
-                        .orderNo(requestDto.getOrderId())
-                    .build());
+//            orderAdapter.successOrder(SuccessOrderRequestDto.builder()
+//                        .paymentKey(requestDto.getPaymentKey())
+//                        .orderNo(requestDto.getOrderId())
+//                    .build());
 
             savePaymentHistory(paymentResponseData,
                     requestDto.getOrderId(),
                     payment.getParser());
 
         } catch (PaymentFailureException e) {
-            failPayment(requestDto.getPaymentKey(),
-                    PaymentProvider.valueOf(requestDto.getProvider()),
-                    orderResponseDto);
+//            failPayment(requestDto.getPaymentKey(),
+//                    PaymentProvider.valueOf(requestDto.getProvider()),
+//                    orderResponseDto);
 
             log.error("error: {}, message: {}", e.getClass(), e.getMessage());
         }
@@ -122,10 +122,10 @@ public class PaymentServiceImpl implements PaymentService {
                         .cancelAmount(0L)
                 .build());
 
-        orderAdapter.failCancelOrder(FailCancelOrderRequestDto.builder()
-                .paymentCancelHistoryNo(paymentCancelHistory.getNo())
-                        .restoreOrderProductNos(orderResponseDto.getOrderProductNos())
-                .build());
+//        orderAdapter.failCancelOrder(FailCancelOrderRequestDto.builder()
+//                .paymentCancelHistoryNo(paymentCancelHistory.getNo())
+//                        .restoreOrderProductNos(orderResponseDto.getOrderProductNos())
+//                .build());
     }
 
     @Override
@@ -138,25 +138,35 @@ public class PaymentServiceImpl implements PaymentService {
                 requestDto.getCancelOrderInfos(),
                 paymentHistory.getBalanceAmount());
 
-        PaymentCancelHistory paymentCancelHistory =
-                paymentCancelHistoryRepository.save(
+//        PaymentCancelHistory.Pk pk = new PaymentCancelHistory.Pk(paymentHistory.getPaymentKey());
+//
+//        PaymentCancelHistory paymentCancelHistory = PaymentCancelHistory.builder()
+//                .paymentHistory(paymentHistory)
+//                .cancelAmount(totalCancelAmount)
+//                .cancelReason(requestDto.getCancelReason())
+//                .canceledAt(LocalDateTime.now())
+//                .pk(pk)
+//                .build();
+
+        PaymentCancelHistory newPaymentCancelHistory =
+                paymentCancelHistoryRepository.saveAndFlush(
                         PaymentCancelHistory.builder()
-                            .paymentHistory(paymentHistory)
-                            .cancelAmount(totalCancelAmount)
-                            .cancelReason(requestDto.getCancelReason())
-                            .canceledAt(LocalDateTime.now())
-                        .build()
+                                .paymentHistory(paymentHistory)
+                                .cancelAmount(totalCancelAmount)
+                                .cancelReason(requestDto.getCancelReason())
+                                .canceledAt(LocalDateTime.now())
+                                .build()
                 );
 
         try {
-            orderAdapter.cancelOrder(
-                    CancelOrderRequestDto
-                            .builder()
-                            .paymentCancelHistoryNo(paymentCancelHistory.getNo())
-                            .cancelReason(requestDto.getCancelReason())
-                            .cancelOrderInfos(requestDto.getCancelOrderInfos())
-                            .build()
-            );
+//            orderAdapter.cancelOrder(
+//                    CancelOrderRequestDto
+//                            .builder()
+//                            .paymentCancelHistoryNo(paymentCancelHistory.getNo())
+//                            .cancelReason(requestDto.getCancelReason())
+//                            .cancelOrderInfos(requestDto.getCancelOrderInfos())
+//                            .build()
+//            );
         } catch (ShopServerException e) {
             throw new PaymentCancelException();
         }
@@ -170,24 +180,24 @@ public class PaymentServiceImpl implements PaymentService {
 
             paymentHistory
                     .cancelPartial(cancelPaymentResponseDto.getBalanceAmount());
-            paymentCancelHistory
-                    .cancelComplete(cancelPaymentResponseDto.getCanceledAt());
+//            paymentCancelHistory
+//                    .cancelComplete(cancelPaymentResponseDto.getCanceledAt());
         } catch (CancelPaymentFailureException e) {
-            orderAdapter.failCancelOrder(
-                    FailCancelOrderRequestDto.builder()
-                            .paymentCancelHistoryNo(paymentCancelHistory.getNo())
-                            .restoreOrderProductNos(Arrays.stream(requestDto.getCancelOrderInfos())
-                                    .map(CancelOrderInfo::getCancelOrderProductNo)
-                                    .collect(Collectors.toList()))
-                    .build()
-            );
+//            orderAdapter.failCancelOrder(
+//                    FailCancelOrderRequestDto.builder()
+//                            .paymentCancelHistoryNo(paymentCancelHistory.getNo())
+//                            .restoreOrderProductNos(Arrays.stream(requestDto.getCancelOrderInfos())
+//                                    .map(CancelOrderInfo::getCancelOrderProductNo)
+//                                    .collect(Collectors.toList()))
+//                    .build()
+//            );
 
             log.error("cause : {} , message : {}", e.getCause(), e.getMessage());
         } catch (PaymentParserException e) {
             paymentHistory
                     .cancelPartial(paymentHistory.getBalanceAmount() - totalCancelAmount);
-            paymentCancelHistory
-                    .cancelComplete(LocalDateTime.now());
+//            paymentCancelHistory
+//                    .cancelComplete(LocalDateTime.now());
 
             log.error("cause : {} , message : {}", e.getCause(), e.getMessage());
         }
