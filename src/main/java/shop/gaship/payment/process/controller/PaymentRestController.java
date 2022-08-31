@@ -26,7 +26,7 @@ import shop.gaship.payment.process.service.PaymentService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/payment")
+@RequestMapping("/payments")
 public class PaymentRestController {
     private final PaymentService paymentService;
 

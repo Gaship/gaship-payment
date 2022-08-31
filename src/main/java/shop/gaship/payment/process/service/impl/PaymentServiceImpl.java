@@ -66,10 +66,10 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public void successPayment(PaymentSuccessRequestDto requestDto) {
-        OrderResponseDto orderResponseDto = orderAdapter
-                .getOrderByNo(requestDto.getOrderId());
-
-        checkValidAmount(orderResponseDto, requestDto.getAmount());
+//        OrderResponseDto orderResponseDto = orderAdapter
+//                .getOrderByNo(requestDto.getOrderId());
+//
+//        checkValidAmount(orderResponseDto, requestDto.getAmount());
 
         Payment payment = paymentBuilderFactory
                 .build(PaymentProvider
@@ -89,9 +89,9 @@ public class PaymentServiceImpl implements PaymentService {
                     payment.getParser());
 
         } catch (PaymentFailureException e) {
-            failPayment(requestDto.getPaymentKey(),
-                    PaymentProvider.valueOf(requestDto.getProvider()),
-                    orderResponseDto);
+//            failPayment(requestDto.getPaymentKey(),
+//                    PaymentProvider.valueOf(requestDto.getProvider()),
+//                    orderResponseDto);
 
             log.error("error: {}, message: {}", e.getClass(), e.getMessage());
         }

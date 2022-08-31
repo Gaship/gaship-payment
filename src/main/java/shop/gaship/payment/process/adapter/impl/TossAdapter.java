@@ -1,7 +1,8 @@
 package shop.gaship.payment.process.adapter.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Base64;
+import java.util.Map;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,8 +15,6 @@ import shop.gaship.payment.process.adapter.PaymentAdapter;
 import shop.gaship.payment.process.dto.request.CancelPaymentRequestDto;
 import shop.gaship.payment.process.dto.request.PaymentSuccessRequestDto;
 import shop.gaship.payment.process.exception.CancelPaymentFailureException;
-import shop.gaship.payment.process.exception.PaymentFailureException;
-
 
 
 /**
@@ -36,14 +35,14 @@ public class TossAdapter implements PaymentAdapter {
         return WebClient
                 .create(TossConfig.BASE_URL)
                 .post()
-                .uri(TOSS_URL + "/" + requestDto.getPaymentKey())
+                .uri(TOSS_URL + "/confirm")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization",
-                        "Basic " + Base64.getEncoder().encodeToString((secretKey + ":").getBytes()))
-                .bodyValue(requestDto)
+                        "Basic " + Base64.getEncoder().encodeToString((secretKey+":").getBytes()))
+                .bodyValue(Map.of("paymentKey",requestDto.getPaymentKey(),
+                        "orderId","gaship-"+requestDto.getOrderId(),
+                        "amount", requestDto.getAmount()))
                 .retrieve()
-                .onStatus(HttpStatus::isError,
-                        clientResponse -> Mono.error(new PaymentFailureException()))
                 .bodyToMono(JsonNode.class)
                 .block();
     }
