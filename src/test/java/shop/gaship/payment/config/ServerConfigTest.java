@@ -24,11 +24,7 @@ class ServerConfigTest {
 
     @Test
     void serverConfigEnvironmentTest() {
-        assertThat(config.getAuthUrl())
-                .isEqualTo("http://133.186.132.244:7071");
         assertThat(config.getShoppingMallUrl())
-                .isEqualTo("http://133.186.132.244:7072");
-        assertThat(config.getSchedulerUrl())
-                .isEqualTo("http://133.186.132.244:7074");
+                .isEqualTo("http://192.168.0.96");
     }
 }
