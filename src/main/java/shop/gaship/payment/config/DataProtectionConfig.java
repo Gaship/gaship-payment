@@ -8,6 +8,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Objects;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -32,6 +35,7 @@ import shop.gaship.payment.dataprotection.exception.NotFoundDataProtectionRespon
  */
 @Configuration
 @ConfigurationProperties(prefix = "secure-key-manager")
+@Slf4j
 public class DataProtectionConfig {
     private String url;
     private String appKey;
@@ -74,6 +78,7 @@ public class DataProtectionConfig {
                     .getSecret();
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException
                  | UnrecoverableKeyException | IOException | KeyManagementException e) {
+            log.error("error reason : {}", ExceptionUtils.getStackTrace(e));
             throw new NotFoundDataProtectionResponseData(errorMessage);
         }
     }
