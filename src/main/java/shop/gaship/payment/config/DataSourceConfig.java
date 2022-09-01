@@ -22,8 +22,8 @@ public class DataSourceConfig {
 
     @Bean
     public DataSource getPaymentDataSource(DataProtectionConfig dataProtectionConfig) {
-        String secretUrl = dataProtectionConfig.findSecretDataFromSecureKeyManager("6c8041121cef4165871803d7ef4a6e65");
-        String secretPassword = dataProtectionConfig.findSecretDataFromSecureKeyManager("876b9add24b943869830b1919a7525ab");
+        String secretUrl = dataProtectionConfig.findSecretDataFromSecureKeyManager(url);
+        String secretPassword = dataProtectionConfig.findSecretDataFromSecureKeyManager(password);
 
         DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName(driverClassName);
