@@ -7,7 +7,7 @@ import shop.gaship.payment.history.enumm.PaymentProvider;
 import shop.gaship.payment.process.adapter.PaymentAdapter;
 import shop.gaship.payment.process.adapter.impl.TossAdapter;
 import shop.gaship.payment.process.dto.request.CancelPaymentRequestDto;
-import shop.gaship.payment.process.dto.request.PaymentCancelRequestDto;
+import shop.gaship.payment.process.dto.request.OrderPaymentCancelRequestDto;
 import shop.gaship.payment.process.factory.domain.Payment;
 import shop.gaship.payment.process.factory.domain.PaymentParser;
 
@@ -34,11 +34,12 @@ public class TossPayment implements Payment {
     }
 
     @Override
-    public CancelPaymentResponseDto cancel(PaymentCancelRequestDto requestDto,
+    public CancelPaymentResponseDto cancel(String paymentKey,
+                                           OrderPaymentCancelRequestDto requestDto,
                                            Long totalCancelAmount) {
         return tossParser.parseCancelData(
                 tossAdapter.requestCancelPayment(
-                            requestDto.getPaymentKey(),
+                            paymentKey,
                             CancelPaymentRequestDto.builder()
                                 .cancelReason(requestDto.getCancelReason())
                                 .cancelAmount(totalCancelAmount)

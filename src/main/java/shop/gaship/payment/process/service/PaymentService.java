@@ -1,7 +1,7 @@
 package shop.gaship.payment.process.service;
 
 import shop.gaship.payment.history.enumm.PaymentProvider;
-import shop.gaship.payment.process.dto.request.PaymentCancelRequestDto;
+import shop.gaship.payment.process.dto.request.OrderPaymentCancelRequestDto;
 import shop.gaship.payment.process.dto.request.PaymentSuccessRequestDto;
 import shop.gaship.payment.process.dto.response.OrderResponseDto;
 
@@ -23,5 +23,6 @@ public interface PaymentService {
                      PaymentProvider paymentProvider,
                      OrderResponseDto orderResponseDto);
 
-    void cancelPayment(PaymentCancelRequestDto requestDto);
+    void cancelPayment(Integer orderNo,
+                       OrderPaymentCancelRequestDto requestDto);
 }

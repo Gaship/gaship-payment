@@ -4,15 +4,11 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import shop.gaship.payment.advice.response.ErrorResponse;
 import shop.gaship.payment.history.enumm.PaymentProvider;
 import shop.gaship.payment.process.dto.request.FailurePaymentRequestDto;
-import shop.gaship.payment.process.dto.request.PaymentCancelRequestDto;
+import shop.gaship.payment.process.dto.request.OrderPaymentCancelRequestDto;
 import shop.gaship.payment.process.dto.request.PaymentSuccessRequestDto;
 import shop.gaship.payment.process.exception.PaymentFailureException;
 import shop.gaship.payment.process.service.PaymentService;
@@ -69,10 +65,11 @@ public class PaymentRestController {
      * @param requestDto 결제 취소 요청 dto 입니다.
      * @return body 는 없으며 상태가 OK 인 ResponseEntity 를 반환합니다.
      */
-    @PostMapping("/cancel")
+    @PostMapping("/{orderNo}/cancel")
     public ResponseEntity<Void> paymentCancel(
-            @Valid @RequestBody PaymentCancelRequestDto requestDto) {
-        paymentService.cancelPayment(requestDto);
+            @PathVariable("orderNo") Integer orderNo,
+            @Valid @RequestBody OrderPaymentCancelRequestDto requestDto) {
+        paymentService.cancelPayment(orderNo, requestDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .build();

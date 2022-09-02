@@ -6,10 +6,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import shop.gaship.payment.config.ServerConfig;
+import shop.gaship.payment.exception.OrderNotFoundException;
 import shop.gaship.payment.process.adapter.OrderAdapter;
 import shop.gaship.payment.process.adapter.dto.request.CancelOrderRequestDto;
 import shop.gaship.payment.process.adapter.dto.request.FailCancelOrderRequestDto;
 import shop.gaship.payment.process.adapter.dto.request.SuccessOrderRequestDto;
+import shop.gaship.payment.process.dto.response.CancelOrderResponseDto;
 import shop.gaship.payment.process.dto.response.OrderResponseDto;
 import shop.gaship.payment.process.exception.ShopServerException;
 import shop.gaship.payment.util.ExceptionUtil;
@@ -35,12 +37,13 @@ public class OrderAdapterImpl implements OrderAdapter {
     public OrderResponseDto getOrderByNo(Integer orderNo) {
         return WebClient.create(serverConfig.getShoppingMallUrl())
                 .get()
-                .uri(ORDER_URL + "/" + orderNo)
+                .uri(ORDER_URL + "?orderNo=" + orderNo)
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError,
                         clientResponse -> Mono.error(new ShopServerException()))
                 .bodyToMono(OrderResponseDto.class)
-                .block();
+                .blockOptional()
+                .orElseThrow(OrderNotFoundException::new);
     }
 
     /**
@@ -89,5 +92,16 @@ public class OrderAdapterImpl implements OrderAdapter {
                 .onStatus(HttpStatus::isError, ExceptionUtil::createErrorMono)
                 .toEntity(Void.class)
                 .block();
+    }
+
+    @Override
+    public CancelOrderResponseDto getCancelOrderDetails(Integer orderNo) {
+        return WebClient.create(serverConfig.getShoppingMallUrl())
+                .get()
+                .uri(ORDER_URL + "?orderNo=" + orderNo)
+                .retrieve()
+                .bodyToMono(CancelOrderResponseDto.class)
+                .blockOptional()
+                .orElseThrow(OrderNotFoundException::new);
     }
 }
