@@ -1,6 +1,7 @@
 package shop.gaship.payment.process.adapter.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,6 +25,7 @@ import shop.gaship.payment.util.ExceptionUtil;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OrderAdapterImpl implements OrderAdapter {
     public static final String ORDER_URL = "/api/orders";
     private final ServerConfig serverConfig;
@@ -96,10 +98,14 @@ public class OrderAdapterImpl implements OrderAdapter {
 
     @Override
     public CancelOrderResponseDto getCancelOrderDetails(Integer orderNo) {
+        String shopBaseUrl = serverConfig.getShoppingMallUrl();
+        log.debug("shopBaseUrl : {}", shopBaseUrl);
+
         return WebClient.create(serverConfig.getShoppingMallUrl())
                 .get()
                 .uri(ORDER_URL + "?orderNo=" + orderNo)
                 .retrieve()
+                .onStatus(HttpStatus::isError, ExceptionUtil::createErrorMono)
                 .bodyToMono(CancelOrderResponseDto.class)
                 .blockOptional()
                 .orElseThrow(OrderNotFoundException::new);
