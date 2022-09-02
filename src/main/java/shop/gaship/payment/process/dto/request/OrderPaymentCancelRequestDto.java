@@ -3,6 +3,7 @@ package shop.gaship.payment.process.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import shop.gaship.payment.process.dto.CancelOrderInfo;
+import java.util.List;
 
 /**
  * 결제 취소 요청 dto 입니다.
@@ -12,8 +13,7 @@ import shop.gaship.payment.process.dto.CancelOrderInfo;
  */
 @Getter
 @AllArgsConstructor
-public class PaymentCancelRequestDto {
-    private String paymentKey;
+public class OrderPaymentCancelRequestDto {
     private String cancelReason;
-    private CancelOrderInfo[] cancelOrderInfos;
+    private List<CancelOrderInfo> cancelOrderInfos;
 }

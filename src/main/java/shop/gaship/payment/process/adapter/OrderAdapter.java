@@ -3,6 +3,7 @@ package shop.gaship.payment.process.adapter;
 import shop.gaship.payment.process.adapter.dto.request.CancelOrderRequestDto;
 import shop.gaship.payment.process.adapter.dto.request.FailCancelOrderRequestDto;
 import shop.gaship.payment.process.adapter.dto.request.SuccessOrderRequestDto;
+import shop.gaship.payment.process.dto.response.CancelOrderResponseDto;
 import shop.gaship.payment.process.dto.response.OrderResponseDto;
 
 /**
@@ -40,4 +41,6 @@ public interface OrderAdapter {
      * @param requestDto 성공처리할 주문에 대한 정보입니다.
      */
     void successOrder(SuccessOrderRequestDto requestDto);
+
+    CancelOrderResponseDto getCancelOrderDetails(Integer orderNo);
 }

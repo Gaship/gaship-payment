@@ -3,6 +3,7 @@ package shop.gaship.payment.process.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ import shop.gaship.payment.process.adapter.dto.request.CancelOrderRequestDto;
 import shop.gaship.payment.process.adapter.dto.request.FailCancelOrderRequestDto;
 import shop.gaship.payment.process.adapter.dto.request.SuccessOrderRequestDto;
 import shop.gaship.payment.process.dto.CancelOrderInfo;
-import shop.gaship.payment.process.dto.request.PaymentCancelRequestDto;
+import shop.gaship.payment.process.dto.request.OrderPaymentCancelRequestDto;
 import shop.gaship.payment.process.dto.request.PaymentSuccessRequestDto;
 import shop.gaship.payment.process.dto.response.OrderResponseDto;
 import shop.gaship.payment.process.exception.CancelPaymentFailureException;
@@ -130,9 +131,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public void cancelPayment(PaymentCancelRequestDto requestDto) {
+    public void cancelPayment(Integer orderNo, OrderPaymentCancelRequestDto requestDto) {
+        String orderPaymentKey =
+                orderAdapter.getCancelOrderDetails(orderNo)
+                        .getPaymentKey();
+
         PaymentHistory paymentHistory =
-                paymentHistoryService.findPaymentHistory(requestDto.getPaymentKey());
+                paymentHistoryService.findPaymentHistory(orderPaymentKey);
 
         Long totalCancelAmount = getTotalCancelAmount(
                 requestDto.getCancelOrderInfos(),
@@ -166,7 +171,9 @@ public class PaymentServiceImpl implements PaymentService {
 
         try {
             CancelPaymentResponseDto cancelPaymentResponseDto =
-                    payment.cancel(requestDto, totalCancelAmount);
+                    payment.cancel(orderPaymentKey,
+                            requestDto,
+                            totalCancelAmount);
 
             paymentHistory
                     .cancelPartial(cancelPaymentResponseDto.getBalanceAmount());
@@ -176,7 +183,7 @@ public class PaymentServiceImpl implements PaymentService {
             orderAdapter.failCancelOrder(
                     FailCancelOrderRequestDto.builder()
                             .paymentCancelHistoryNo(paymentCancelHistory.getNo())
-                            .restoreOrderProductNos(Arrays.stream(requestDto.getCancelOrderInfos())
+                            .restoreOrderProductNos(requestDto.getCancelOrderInfos().stream()
                                     .map(CancelOrderInfo::getCancelOrderProductNo)
                                     .collect(Collectors.toList()))
                     .build()
@@ -218,7 +225,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private Long getTotalCancelAmount(CancelOrderInfo[] cancelOrderInfoList, Long balanceAmount) {
+    private Long getTotalCancelAmount(List<CancelOrderInfo> cancelOrderInfoList, Long balanceAmount) {
         Long totalCancelAmount = 0L;
 
         for (CancelOrderInfo cancelOrderInfo : cancelOrderInfoList) {
