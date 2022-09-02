@@ -98,8 +98,6 @@ public class OrderAdapterImpl implements OrderAdapter {
 
     @Override
     public CancelOrderResponseDto getCancelOrderDetails(Integer orderNo) {
-        String shopBaseUrl = serverConfig.getShoppingMallUrl();
-        log.debug("shopBaseUrl : {}", shopBaseUrl);
 
         return WebClient.create(serverConfig.getShoppingMallUrl())
                 .get()
