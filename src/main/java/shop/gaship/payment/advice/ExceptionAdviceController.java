@@ -39,7 +39,7 @@ public class ExceptionAdviceController {
 
         log.error("error : {}, message : {}", e.getCause(), e.getMessage());
         return ResponseEntity
-                .internalServerError()
+                .badRequest()
                 .body(new ErrorResponse(message));
     }
 
@@ -49,7 +49,7 @@ public class ExceptionAdviceController {
         log.error("error : {}, message : {}", e.getCause(), e.getMessage());
 
         return ResponseEntity
-                .badRequest()
+                .internalServerError()
                 .body(new ErrorResponse(message));
     }
 }
