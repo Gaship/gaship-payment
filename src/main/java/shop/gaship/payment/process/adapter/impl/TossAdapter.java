@@ -15,6 +15,7 @@ import shop.gaship.payment.process.adapter.PaymentAdapter;
 import shop.gaship.payment.process.dto.request.CancelPaymentRequestDto;
 import shop.gaship.payment.process.dto.request.PaymentSuccessRequestDto;
 import shop.gaship.payment.process.exception.CancelPaymentFailureException;
+import shop.gaship.payment.process.exception.PaymentFailureException;
 
 
 /**
@@ -43,6 +44,8 @@ public class TossAdapter implements PaymentAdapter {
                         "orderId","gaship-"+requestDto.getOrderId(),
                         "amount", requestDto.getAmount()))
                 .retrieve()
+                .onStatus(HttpStatus::isError,
+                        clientResponse -> Mono.error(new PaymentFailureException()))
                 .bodyToMono(JsonNode.class)
                 .block();
     }

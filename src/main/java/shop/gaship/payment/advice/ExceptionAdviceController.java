@@ -7,6 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import shop.gaship.payment.advice.response.ErrorResponse;
+import shop.gaship.payment.process.exception.OrderSuccessProcessFailureException;
+import shop.gaship.payment.process.exception.PaymentFailureException;
 
 import java.net.ConnectException;
 
@@ -31,13 +33,23 @@ public class ExceptionAdviceController {
         return ResponseEntity.badRequest().body(new ErrorResponse(message));
     }
 
-    @ExceptionHandler({ConnectException.class})
+    @ExceptionHandler({ConnectException.class, OrderSuccessProcessFailureException.class})
     public ResponseEntity<ErrorResponse> connectionExceptionHandler(Exception e) {
         String message = e.getMessage();
 
         log.error("error : {}, message : {}", e.getCause(), e.getMessage());
         return ResponseEntity
                 .internalServerError()
+                .body(new ErrorResponse(message));
+    }
+
+    @ExceptionHandler({PaymentFailureException.class})
+    public ResponseEntity<ErrorResponse> paymentFailureExceptionHandler(PaymentFailureException e) {
+        String message = e.getMessage();
+        log.error("error : {}, message : {}", e.getCause(), e.getMessage());
+
+        return ResponseEntity
+                .badRequest()
                 .body(new ErrorResponse(message));
     }
 }

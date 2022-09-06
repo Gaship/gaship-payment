@@ -2,7 +2,6 @@ package shop.gaship.payment.process.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -95,6 +94,7 @@ public class PaymentServiceImpl implements PaymentService {
 //                    orderResponseDto);
 
             log.error("error: {}, message: {}", e.getClass(), e.getMessage());
+            throw e;
         }
     }
 
