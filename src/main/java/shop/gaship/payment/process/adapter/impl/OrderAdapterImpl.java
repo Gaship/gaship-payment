@@ -14,6 +14,7 @@ import shop.gaship.payment.process.adapter.dto.request.FailCancelOrderRequestDto
 import shop.gaship.payment.process.adapter.dto.request.SuccessOrderRequestDto;
 import shop.gaship.payment.process.dto.response.CancelOrderResponseDto;
 import shop.gaship.payment.process.dto.response.OrderResponseDto;
+import shop.gaship.payment.process.exception.OrderSuccessProcessFailureException;
 import shop.gaship.payment.process.exception.ShopServerException;
 import shop.gaship.payment.util.ExceptionUtil;
 
@@ -91,7 +92,8 @@ public class OrderAdapterImpl implements OrderAdapter {
                 .uri(ORDER_URL + "/success")
                 .bodyValue(requestDto)
                 .retrieve()
-                .onStatus(HttpStatus::isError, ExceptionUtil::createErrorMono)
+                .onStatus(HttpStatus::isError, clientResponse ->
+                        Mono.error(new OrderSuccessProcessFailureException()))
                 .toEntity(Void.class)
                 .block();
     }
