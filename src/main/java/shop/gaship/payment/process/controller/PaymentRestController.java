@@ -53,7 +53,7 @@ public class PaymentRestController {
     public ResponseEntity<ErrorResponse> paymentFail(FailurePaymentRequestDto requestDto) {
         paymentService.failPayment(requestDto.getPaymentKey(),
                 PaymentProvider.valueOf(requestDto.getProvider()),
-                requestDto.getOrderResponseDto());
+                requestDto.getOrderPaymentResponseDto());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(PaymentFailureException.MESSAGE));

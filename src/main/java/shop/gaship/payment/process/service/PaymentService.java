@@ -3,7 +3,7 @@ package shop.gaship.payment.process.service;
 import shop.gaship.payment.history.enumm.PaymentProvider;
 import shop.gaship.payment.process.dto.request.OrderPaymentCancelRequestDto;
 import shop.gaship.payment.process.dto.request.PaymentSuccessRequestDto;
-import shop.gaship.payment.process.dto.response.OrderResponseDto;
+import shop.gaship.payment.process.dto.response.OrderPaymentResponseDto;
 
 /**
  * 결제 요청 관련 처리 로직을 위한 service interface.
@@ -21,7 +21,7 @@ public interface PaymentService {
 
     void failPayment(String paymentKey,
                      PaymentProvider paymentProvider,
-                     OrderResponseDto orderResponseDto);
+                     OrderPaymentResponseDto orderPaymentResponseDto);
 
     void cancelPayment(Integer orderNo,
                        OrderPaymentCancelRequestDto requestDto);

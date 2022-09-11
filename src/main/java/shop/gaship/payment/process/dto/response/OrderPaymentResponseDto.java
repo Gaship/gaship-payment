@@ -3,6 +3,7 @@ package shop.gaship.payment.process.dto.response;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 주문 데이터 요청에 대한 응답 data transfer object 입니다.
@@ -12,7 +13,8 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class OrderResponseDto {
+@NoArgsConstructor
+public class OrderPaymentResponseDto {
     private Integer no;
     private Long totalOrderAmount;
     private List<Integer> orderProductNos;

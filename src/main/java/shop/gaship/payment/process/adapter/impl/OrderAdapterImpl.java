@@ -13,7 +13,7 @@ import shop.gaship.payment.process.adapter.dto.request.CancelOrderRequestDto;
 import shop.gaship.payment.process.adapter.dto.request.FailCancelOrderRequestDto;
 import shop.gaship.payment.process.adapter.dto.request.SuccessOrderRequestDto;
 import shop.gaship.payment.process.dto.response.CancelOrderResponseDto;
-import shop.gaship.payment.process.dto.response.OrderResponseDto;
+import shop.gaship.payment.process.dto.response.OrderPaymentResponseDto;
 import shop.gaship.payment.process.exception.OrderSuccessProcessFailureException;
 import shop.gaship.payment.process.exception.ShopServerException;
 import shop.gaship.payment.util.ExceptionUtil;
@@ -37,14 +37,14 @@ public class OrderAdapterImpl implements OrderAdapter {
      * @throws ShopServerException Shopping mall 서버에서 문제가 발생하였습니다.
      */
     @Override
-    public OrderResponseDto getOrderByNo(Integer orderNo) {
+    public OrderPaymentResponseDto getOrderByNo(Integer orderNo) {
         return WebClient.create(serverConfig.getShoppingMallUrl())
                 .get()
                 .uri(ORDER_URL + "?orderNo=" + orderNo)
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError,
                         clientResponse -> Mono.error(new ShopServerException()))
-                .bodyToMono(OrderResponseDto.class)
+                .bodyToMono(OrderPaymentResponseDto.class)
                 .blockOptional()
                 .orElseThrow(OrderNotFoundException::new);
     }
@@ -103,7 +103,7 @@ public class OrderAdapterImpl implements OrderAdapter {
 
         return WebClient.create(serverConfig.getShoppingMallUrl())
                 .get()
-                .uri(ORDER_URL + "?orderNo=" + orderNo)
+                .uri(ORDER_URL + "?cancelOrderNo=" + orderNo)
                 .retrieve()
                 .onStatus(HttpStatus::isError, ExceptionUtil::createErrorMono)
                 .bodyToMono(CancelOrderResponseDto.class)
