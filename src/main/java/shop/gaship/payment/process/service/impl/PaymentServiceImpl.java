@@ -26,7 +26,7 @@ import shop.gaship.payment.process.adapter.dto.request.SuccessOrderRequestDto;
 import shop.gaship.payment.process.dto.CancelOrderInfo;
 import shop.gaship.payment.process.dto.request.OrderPaymentCancelRequestDto;
 import shop.gaship.payment.process.dto.request.PaymentSuccessRequestDto;
-import shop.gaship.payment.process.dto.response.OrderResponseDto;
+import shop.gaship.payment.process.dto.response.OrderPaymentResponseDto;
 import shop.gaship.payment.process.exception.CancelPaymentFailureException;
 import shop.gaship.payment.process.exception.InvalidCancelAmountException;
 import shop.gaship.payment.process.exception.InvalidOrderAmountException;
@@ -66,10 +66,10 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public void successPayment(PaymentSuccessRequestDto requestDto) {
-//        OrderResponseDto orderResponseDto = orderAdapter
-//                .getOrderByNo(requestDto.getOrderId());
-//
-//        checkValidAmount(orderResponseDto, requestDto.getAmount());
+        OrderPaymentResponseDto orderPaymentResponseDto = orderAdapter
+                .getOrderByNo(requestDto.getOrderId());
+
+        checkValidAmount(orderPaymentResponseDto, requestDto.getAmount());
 
         Payment payment = paymentBuilderFactory
                 .build(PaymentProvider
@@ -89,9 +89,9 @@ public class PaymentServiceImpl implements PaymentService {
                     payment.getParser());
 
         } catch (PaymentFailureException e) {
-//            failPayment(requestDto.getPaymentKey(),
-//                    PaymentProvider.valueOf(requestDto.getProvider()),
-//                    orderResponseDto);
+            failPayment(requestDto.getPaymentKey(),
+                    PaymentProvider.valueOf(requestDto.getProvider()),
+                    orderPaymentResponseDto);
 
             log.error("error: {}, message: {}", e.getClass(), e.getMessage());
             throw e;
@@ -102,14 +102,14 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public void failPayment(String paymentKey,
                             PaymentProvider paymentProvider,
-                            OrderResponseDto orderResponseDto) {
+                            OrderPaymentResponseDto orderPaymentResponseDto) {
 
         PaymentHistory failPaymentHistory = PaymentHistory.createFailedHistory(
                 PaymentHistoryRequestDto.builder()
                         .paymentKey(paymentKey)
                         .provider(paymentProvider)
-                        .orderNo(orderResponseDto.getNo())
-                        .totalAmount(orderResponseDto.getTotalOrderAmount())
+                        .orderNo(orderPaymentResponseDto.getNo())
+                        .totalAmount(orderPaymentResponseDto.getTotalOrderAmount())
                         .requestedAt(LocalDateTime.now())
                 .build());
 
@@ -125,7 +125,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         orderAdapter.failCancelOrder(FailCancelOrderRequestDto.builder()
                 .paymentCancelHistoryNo(paymentCancelHistory.getNo())
-                        .restoreOrderProductNos(orderResponseDto.getOrderProductNos())
+                        .restoreOrderProductNos(orderPaymentResponseDto.getOrderProductNos())
                 .build());
     }
 
@@ -200,9 +200,9 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private void checkValidAmount(OrderResponseDto orderResponseDto,
+    private void checkValidAmount(OrderPaymentResponseDto orderPaymentResponseDto,
                                   Long amount) {
-        if (orderResponseDto
+        if (!orderPaymentResponseDto
                 .getTotalOrderAmount()
                 .equals(amount)) {
             throw new InvalidOrderAmountException();
